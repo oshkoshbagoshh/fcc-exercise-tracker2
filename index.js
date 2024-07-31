@@ -1,137 +1,51 @@
-const express = require('express');
-const app = express();
-const cors = require('cors');
-require('dotenv').config();
-const mongoose = require('mongoose');
-const bodyparser = require('body-parser');
-const User = require('./models/User');
-const Exercise = require('./models/Exercise');
+/*
+ * @Author: AJ Javadi 
+ * @Email: amirjavadi25@gmail.com
+ * @Date: 2024-07-31 16:33:41 
+ * @Last Modified by: AJ Javadi
+ * @Last Modified time: 2024-07-31 16:41:48
+ * @Description: file:///Users/aj/Desktop/bootcamp/FREECODECAMP/Curriculum/5.%20Backend%20APIs/4.%20Projects/4.%20Exercise%20Tracker/fcc-exercise-tracker2/index.js
+ * main entry into the application 
+ * 
+ */
 
+
+const express = require('express');
+const bodyParser = require('body-parser');
+require('dotenv').config();
+
+
+const cors = require('cors');
+const app = express();
+
+// database config
+const connectDB = require('./config/database');
+
+// Routes
+const userRoutes = require('./routes/userRoutes');
+const exerciseRoutes = require('./routes/exerciseRoutes');
+
+// Connect to MongoDB
+connectDB();
+
+// more config....
 app.use(cors())
 app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve the home page
+
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
-// MongoDB Connection
-( async() => {
-  try {
-   await  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/exercise-tracker');
-    console.log('Connected to MongoDB');
-
-  } catch (error) {
-    console.error('MongoDB connection error:',error);
-  }
-
-}) ();
 
 
 
-// Create a new user
-app.post('/api/users', async (req, res) => {
-  // console.log('Received body:', req.body);
-  console.log('Headers:', req.headers);
-  console.log('Body:', req.body);
-  console.log('Raw body:', req.rawBody);
-  if (!req.body.username) {
-    return res.status(400).json({error: 'Username is required '});
-  }
-  try {
-    const newUser = new User({
-      username: req.body.username
-    });
-    const savedUser = await newUser.save();
-    res.json({
-      username: savedUser.username,
-      _id: savedUser._id
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-
-// Add exercises 
-app.post('/api/users/:_id/exercises', async (req, res) => {
-  try {
-    const userId = req.params._id;
-    const { description, duration, date } = req.body;
-
-    const user = await User.findById(userId);
-    // if user doesn't exist
-    if (!user) {
-      return res.status(404).json({
-        error: 'User not found'
-      });
-    }
-
-    const newExercise = new Exercise({
-      userId,
-      description,
-      duration,
-      date: date ? new Date(date) : new Date(),
-    });
-
-    const savedExercise = await newExercise.save();
-    res.json({
-      _id: user._id,
-      username: user.username,
-      description: savedExercise.description,
-      duration: savedExercise.duration,
-      date: savedExercise.date.toString(),
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-
-// Get user's exercise log
-app.get('/api/users/:_id/logs', async (req, res) => {
-  try {
-    const userId = req.params._id;
-    const { from, to, limit } = req.query;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    //  date filter and queries
-    let dateFilter = {};
-    if (from) dateFilter.$gte = new Date(from);
-    if (to) dateFilter.$lte = new Date(to);
-
-    const exercises = await Exercise.find({
-      userId,
-      // date: dateFilter,
-      ...(Object.keys(dateFilter).length && { date: dateFilter }),
-    })
-      .limit(parseInt(limit) || 0 )
-      .exec();
-
-    res.json({
-      _id: user._id,
-      username: user.username,
-      count: exercises.length,
-      log: exercises.map((ex) => ({
-        description: ex.description,
-        duration: ex.duration,
-        date: ex.date.toDateString(),
-
-      })),
-    });
-
-
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-}
-);
-
+// Routes
+app.use('/api', userRoutes);
+app.use('/api', exerciseRoutes);
 
 
 //  ------------------
