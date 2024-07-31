@@ -1,28 +1,34 @@
-import express from 'express';
+const express = require('express');
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
 // Remove the line since 'bodyparser' is not used
+const bodyparser = require('body-parser');
 const User = require('./models/User');
 const Exercise = require('./models/Exercise');
 
 app.use(cors())
 app.use(express.static('public'))
+app.use(express.json());
+
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
 // MongoDB Connection
-// TODO: wrap in try catch, async await
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/exercise-tracker');
+( async() => {
+  try {
+   await  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/exercise-tracker');
+    console.log('Connected to MongoDB');
+
+  } catch (error) {
+    console.error('MongoDB connection error:',error);
+  }
+
+}) ();
 
 
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
 
 // Create a new user
 app.post('/api/users', async (req, res) => {
@@ -77,7 +83,7 @@ app.post('/api/users/:_id/exercises', async (req, res) => {
 
 
 // Get user's exercise log
-app.get('/api/users/:_id,/logs', async (req, res) => {
+app.get('/api/users/:_id/logs', async (req, res) => {
   try {
     const userId = req.params._id;
     const { from, to, limit } = req.query;
@@ -94,9 +100,10 @@ app.get('/api/users/:_id,/logs', async (req, res) => {
 
     const exercises = await Exercise.find({
       userId,
-      date: dateFilter,
+      // date: dateFilter,
+      ...(Object.keys(dateFilter).length && { date: dateFilter }),
     })
-      .limit(parseInt(limit))
+      .limit(parseInt(limit) || 0 )
       .exec();
 
     res.json({
