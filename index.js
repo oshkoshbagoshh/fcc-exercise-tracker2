@@ -3,7 +3,6 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const mongoose = require('mongoose');
-// Remove the line since 'bodyparser' is not used
 const bodyparser = require('body-parser');
 const User = require('./models/User');
 const Exercise = require('./models/Exercise');
@@ -11,6 +10,7 @@ const Exercise = require('./models/Exercise');
 app.use(cors())
 app.use(express.static('public'))
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (_, res) => {
   res.sendFile(__dirname + '/views/index.html')
@@ -32,6 +32,13 @@ app.get('/', (_, res) => {
 
 // Create a new user
 app.post('/api/users', async (req, res) => {
+  // console.log('Received body:', req.body);
+  console.log('Headers:', req.headers);
+  console.log('Body:', req.body);
+  console.log('Raw body:', req.rawBody);
+  if (!req.body.username) {
+    return res.status(400).json({error: 'Username is required '});
+  }
   try {
     const newUser = new User({
       username: req.body.username
