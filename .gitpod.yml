@@ -4,6 +4,10 @@ ports:
   - port: 3000
     onOpen: open-preview
     visibility: public
+  # - port: 27017
+    # onOpen: open-preview
+    # visibility: public
+
 
 tasks:
   - init: npm install

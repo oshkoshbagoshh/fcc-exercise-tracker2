@@ -1,0 +1,50 @@
+{
+  "users": [
+    {
+      "username": "test",
+      "id": "1722467626274"
+    },
+    {
+      "username": "john_doe",
+      "id": "1722468085452"
+    },
+    {
+      "username": "jane_smith",
+      "id": "1722468085577"
+    },
+    {
+      "username": "miguel",
+      "id": "1722468355422"
+    }
+  ],
+  "exercises": [
+    {
+      "userId": "1722468085452",
+      "description": "Weightlifting",
+      "duration": 45,
+      "date": "Mon Jul 03 2023",
+      "id": "1722468085802"
+    },
+    {
+      "userId": "1722468085577",
+      "description": "Swimming",
+      "duration": 40,
+      "date": "Tue Jul 04 2023",
+      "id": "1722468085972"
+    },
+    {
+      "userId": "1722468355422",
+      "description": "Yoga",
+      "duration": 30,
+      "date": "Wed Jul 31 2024",
+      "id": "1722468372952"
+    },
+    {
+      "userId": "1722468355422",
+      "description": "Running",
+      "duration": 30,
+      "date": "Mon Jul 31 2023",
+      "id": "1722468435498"
+    }
+  ]
+}
