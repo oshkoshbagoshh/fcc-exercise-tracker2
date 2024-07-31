@@ -4,17 +4,18 @@
  * @Date: 2024-07-31 16:28:56 
  * @Last Modified by: AJ Javadi
  * @Last Modified time: 2024-07-31 16:37:07
- * @Description: file:///Users/aj/Desktop/bootcamp/FREECODECAMP/Curriculum/5.%20Backend%20APIs/4.%20Projects/4.%20Exercise%20Tracker/fcc-exercise-tracker2/config/database.js
- * config for mongoose DB 
+ * @Description: config for mongoose DB 
  *  can change to use Cloud Atlas Free Cluster if you want
  */
 
-
 const mongoose = require('mongoose');
+
+// If you're using dotenv, uncomment the next line
+require('dotenv').config();
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/exercise-tracker');
+    await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
   } catch (error) {
     console.error('MongoDB connection error:', error);

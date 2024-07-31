@@ -16,12 +16,13 @@
 		"picomatch": "^4.0.2"
 	},
 	"repository": {
-		"url": "https://github.com/freeCodeCamp/boilerplate-project-exercisetracker"
+		"url": "https://github.com/oshkoshbagoshh/fcc-exercise-tracker2"
 	},
 	"license": "MIT",
 	"keywords": [
 		"node",
-		"express"
+		"express",
+		"mongoose"
 	],
 	"devDependencies": {
 		"nodemon": "^3.1.4"
